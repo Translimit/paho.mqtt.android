@@ -1048,64 +1048,6 @@ class MqttConnection implements MqttCallbackExtended {
 				setConnectingState(false);
 				handleException(resultBundle, ex);
 			}
-		} else if (disconnected && !cleanSession) {
-			// use the activityToke the same with action connect
-			service.traceDebug(TAG,"Do Real Reconnect!");
-			final Bundle resultBundle = new Bundle();
-			resultBundle.putString(
-				MqttServiceConstants.CALLBACK_ACTIVITY_TOKEN,
-				reconnectActivityToken);
-			resultBundle.putString(
-				MqttServiceConstants.CALLBACK_INVOCATION_CONTEXT, null);
-			resultBundle.putString(MqttServiceConstants.CALLBACK_ACTION,
-				MqttServiceConstants.CONNECT_ACTION);
-			
-			try {
-				
-				IMqttActionListener listener = new MqttConnectionListener(resultBundle) {
-					@Override
-					public void onSuccess(IMqttToken asyncActionToken) {
-						// since the device's cpu can go to sleep, acquire a
-						// wakelock and drop it later.
-						service.traceDebug(TAG,"Reconnect Success!");
-						service.traceDebug(TAG,"DeliverBacklog when reconnect.");
-						doAfterConnectSuccess(resultBundle);
-					}
-					
-					@Override
-					public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-						resultBundle.putString(
-								MqttServiceConstants.CALLBACK_ERROR_MESSAGE,
-								exception.getLocalizedMessage());
-						resultBundle.putSerializable(
-								MqttServiceConstants.CALLBACK_EXCEPTION,
-								exception);
-						service.callbackToActivity(clientHandle, Status.ERROR,
-								resultBundle);
-
-						doAfterConnectFail(resultBundle);
-						
-					}
-				};
-				
-				myClient.connect(connectOptions, null, listener);
-				setConnectingState(true);
-			} catch (MqttException e) {
-				service.traceError(TAG, "Cannot reconnect to remote server." + e.getMessage());
-				setConnectingState(false);
-				handleException(resultBundle, e);
-			} catch (Exception e){
-				/*  TODO: Added Due to: https://github.com/eclipse/paho.mqtt.android/issues/101
-				    For some reason in a small number of cases, myClient is null here and so
-				    a NullPointer Exception is thrown. This is a workaround to pass the exception
-				    up to the application. myClient should not be null so more investigation is
-				    required.
-				*/
-				service.traceError(TAG, "Cannot reconnect to remote server." + e.getMessage());
-				setConnectingState(false);
-				MqttException newEx = new MqttException(MqttException.REASON_CODE_UNEXPECTED_ERROR, e.getCause());
-				handleException(resultBundle, newEx);
-			}
 		}
 	}
 	
