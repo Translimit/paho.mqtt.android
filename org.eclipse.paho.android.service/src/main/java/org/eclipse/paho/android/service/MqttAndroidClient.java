@@ -459,8 +459,9 @@ public class MqttAndroidClient extends BroadcastReceiver implements
 		
 		String activityToken = storeToken(connectToken);
 		try {
-			mqttService.connect(clientHandle, connectOptions, null,
+			IMqttToken internalToken = mqttService.connect(clientHandle, connectOptions, null,
 					activityToken);
+			((MqttTokenAndroid)connectToken).setDelegate(internalToken);
 		}
 		catch (MqttException e) {
 			IMqttActionListener listener = connectToken.getActionCallback();
@@ -536,10 +537,11 @@ public class MqttAndroidClient extends BroadcastReceiver implements
 		connectOptions = null;
 		connectToken = null;
 
-		IMqttToken token = new MqttTokenAndroid(this, userContext,
+		MqttTokenAndroid token = new MqttTokenAndroid(this, userContext,
 				callback);
 		String activityToken = storeToken(token);
-		mqttService.disconnect(clientHandle, null, activityToken);
+		IMqttToken internalToken = mqttService.disconnect(clientHandle, null, activityToken);
+		token.setDelegate(internalToken);
 		return token;
 	}
 
@@ -590,11 +592,12 @@ public class MqttAndroidClient extends BroadcastReceiver implements
 		connectOptions = null;
 		connectToken = null;
 
-		IMqttToken token = new MqttTokenAndroid(this, userContext,
+		MqttTokenAndroid token = new MqttTokenAndroid(this, userContext,
 				callback);
 		String activityToken = storeToken(token);
-		mqttService.disconnect(clientHandle, quiesceTimeout, null,
+		IMqttToken internalToken = mqttService.disconnect(clientHandle, quiesceTimeout, null,
 				activityToken);
+		token.setDelegate(internalToken);
 		return token;
 	}
 
@@ -852,10 +855,11 @@ public class MqttAndroidClient extends BroadcastReceiver implements
 	@Override
 	public IMqttToken subscribe(String topic, int qos, Object userContext,
 			IMqttActionListener callback) {
-		IMqttToken token = new MqttTokenAndroid(this, userContext,
+		MqttTokenAndroid token = new MqttTokenAndroid(this, userContext,
 				callback, new String[]{topic});
 		String activityToken = storeToken(token);
-		mqttService.subscribe(clientHandle, topic, qos, null, activityToken);
+		IMqttToken internalToken = mqttService.subscribe(clientHandle, topic, qos, null, activityToken);
+		token.setDelegate(internalToken);
 		return token;
 	}
 
@@ -990,10 +994,11 @@ public class MqttAndroidClient extends BroadcastReceiver implements
 	@Override
 	public IMqttToken subscribe(String[] topic, int[] qos, Object userContext,
 			IMqttActionListener callback) {
-		IMqttToken token = new MqttTokenAndroid(this, userContext,
+		MqttTokenAndroid token = new MqttTokenAndroid(this, userContext,
 				callback, topic);
 		String activityToken = storeToken(token);
-		mqttService.subscribe(clientHandle, topic, qos, null, activityToken);
+		IMqttToken internalToken = mqttService.subscribe(clientHandle, topic, qos, null, activityToken);
+		token.setDelegate(internalToken);
 		return token;
 	}
 	
@@ -1085,9 +1090,10 @@ public class MqttAndroidClient extends BroadcastReceiver implements
 	 * will be passed to callback methods if set.
 	 */
 	public IMqttToken subscribe(String[] topicFilters, int[] qos, Object userContext, IMqttActionListener callback, IMqttMessageListener[] messageListeners) {
-		IMqttToken token = new MqttTokenAndroid(this, userContext, callback, topicFilters);
+		MqttTokenAndroid token = new MqttTokenAndroid(this, userContext, callback, topicFilters);
 		String activityToken = storeToken(token);
-		mqttService.subscribe(clientHandle, topicFilters, qos, null, activityToken, messageListeners);
+		IMqttToken internalToken = mqttService.subscribe(clientHandle, topicFilters, qos, null, activityToken, messageListeners);
+		token.setDelegate(internalToken);
 
 		return null;
 	}
@@ -1145,10 +1151,11 @@ public class MqttAndroidClient extends BroadcastReceiver implements
 	@Override
 	public IMqttToken unsubscribe(String topic, Object userContext,
 			IMqttActionListener callback) {
-		IMqttToken token = new MqttTokenAndroid(this, userContext,
+		MqttTokenAndroid token = new MqttTokenAndroid(this, userContext,
 				callback);
 		String activityToken = storeToken(token);
-		mqttService.unsubscribe(clientHandle, topic, null, activityToken);
+		IMqttToken internalToken = mqttService.unsubscribe(clientHandle, topic, null, activityToken);
+		token.setDelegate(internalToken);
 		return token;
 	}
 
@@ -1190,10 +1197,11 @@ public class MqttAndroidClient extends BroadcastReceiver implements
 	@Override
 	public IMqttToken unsubscribe(String[] topic, Object userContext,
 			IMqttActionListener callback) {
-		IMqttToken token = new MqttTokenAndroid(this, userContext,
+		MqttTokenAndroid token = new MqttTokenAndroid(this, userContext,
 				callback);
 		String activityToken = storeToken(token);
-		mqttService.unsubscribe(clientHandle, topic, null, activityToken);
+		IMqttToken internalToken = mqttService.unsubscribe(clientHandle, topic, null, activityToken);
+		token.setDelegate(internalToken);
 		return token;
 	}
 
