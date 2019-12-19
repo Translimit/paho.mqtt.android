@@ -32,6 +32,7 @@ ext{
 
     supportLibVersion = '25.3.0'
 
+    localbroadcastmanagerVersion = '1.0.0'
 }
 
 def getSdkDirFromLocalProperties() {
@@ -60,6 +61,7 @@ allprojects {
         maven {
             url "file://$sdkDir/extras/android/m2repository/"
         }
+        maven { url "https://maven.google.com" }
     }
 
     version = rootProject.ext.serviceVersion

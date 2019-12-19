@@ -37,7 +37,7 @@ configurations {
 
 dependencies {
     compile "org.eclipse.paho:org.eclipse.paho.client.mqttv3:${rootProject.ext.clientVersion}"
-    compile "com.android.support:support-v4:${rootProject.ext.supportLibVersion}"
+    compile "androidx.localbroadcastmanager:localbroadcastmanager:${rootProject.ext.localbroadcastmanagerVersion}"
     compile fileTree(include: ['*.jar'], dir: 'libs')
 }
 
@@ -81,6 +81,8 @@ task("renameReleaseAAR", type: Copy) {
 // Generate Plain Jar Version of library (good for legacy users)
 task("generateLibraryJar", type: Jar) {
     from("$buildDir/intermediates/classes/release")
+    exclude('androidx/**')
+
 }
 
 // Generate Javadoc
